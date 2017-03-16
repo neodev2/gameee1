@@ -63,8 +63,8 @@ app.get('/', function(req, res){
 	res.sendFile(__dirname + '/views/index.html');
 });
 
-/*io.on('connection', function(socket){
-	rooms[0].users.push({
+io.on('connection', function(socket){
+	/*rooms[0].users.push({
         name: socket.id,
         w: 100,
         h: 100,
@@ -72,12 +72,12 @@ app.get('/', function(req, res){
         x: 0,
         y: 0,
         z: 0
-    });
-	socket.join(rooms[0].name);
+    });*/
+	//socket.join(rooms[0].name);
 	socket.emit('welcome', 'welcome');
     
     console.log(rooms);
-});*/
+});
 
 
 
