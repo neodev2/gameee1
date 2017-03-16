@@ -76,7 +76,10 @@ io.on('connection', function(socket){
     /*socket.join(rooms[0].name);*/
     
     socket.on('disconnect', function(){
-        io.emit('disconnect', socket.id+' disconnected');
+        io.emit('disconnect', {
+            id: socket.id,
+            info: 'disconnected'
+        });
         
         for(var i=0; i<rooms[0].users.length; i++){
             if(rooms[0].users[i].name == socket.id){
