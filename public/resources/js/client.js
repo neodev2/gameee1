@@ -1,9 +1,6 @@
 var socket = io();
 
-socket.on('intervalGameUpdate', function(data) {
-    console.log(data);
-    $('#div1').html( JSON.stringify(data, null, 2) );
-});
+
 
 socket.on('disconnect', function(data) {
     console.log(data);
@@ -234,6 +231,21 @@ if ( havePointerLock ) {
 					objects.push( mesh );
 
 				}
+                
+                // xxx
+                
+                material = new THREE.MeshPhongMaterial( { specular: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
+
+                var mesh = new THREE.Mesh( geometry, material );
+                mesh.position.x = 0;
+                mesh.position.y = 0;
+                mesh.position.z = 0;
+                mesh.name = 'xxx';
+                scene.add( mesh );
+
+                material.color.setHSL( Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
+
+                objects.push( mesh );
 
 				//
 
@@ -319,4 +331,17 @@ if ( havePointerLock ) {
 			}
     
     
+
+socket.on('intervalGameUpdate', function(data) {
+    //console.log(data);
+    //$('#div1').html( JSON.stringify(data, null, 2) );
+    var xxx = scene.getChildByName('xxx');
+    xxx.position.x = data[0].users[0].x;
+    xxx.position.y = data[0].users[0].y;
+    xxx.position.z = data[0].users[0].z;
+});
+
+
+
+
 
