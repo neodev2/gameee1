@@ -62,7 +62,7 @@ app.get('/', function(req, res){
 	res.sendFile(__dirname + '/views/index.html');
 });
 
-io.on('connection', function(socket){
+/*io.on('connection', function(socket){
 	rooms[0].users.push({
         name: socket.id,
         w: 100,
@@ -76,7 +76,7 @@ io.on('connection', function(socket){
 	socket.emit('welcome', 'welcome');
     
     console.log(rooms);
-});
+});*/
 
 
 
