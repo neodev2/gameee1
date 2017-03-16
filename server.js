@@ -74,7 +74,9 @@ io.on('connection', function(socket){
         z: 0
     });
 	/*socket.join(rooms[0].name);*/
-	socket.emit('welcome', rooms);
+    var interval1 = setInterval(function(){
+	    socket.emit('welcome', rooms);
+    }, 50);
 });
 
 
