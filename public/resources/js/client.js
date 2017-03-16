@@ -4,6 +4,7 @@ $(window).load(function(){
     
     socket.on('intervalGameUpdate', function(data) {
         console.log(data);
+        $('body').html(data);
     });
     
     socket.on('disconnect', function(data) {
