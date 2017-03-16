@@ -64,7 +64,7 @@ app.get('/', function(req, res){
 });
 
 io.on('connection', function(socket){
-	/*rooms[0].users.push({
+	rooms[0].users.push({
         name: socket.id,
         w: 100,
         h: 100,
@@ -72,7 +72,7 @@ io.on('connection', function(socket){
         x: 0,
         y: 0,
         z: 0
-    });*/
+    });
 	/*socket.join(rooms[0].name);*/
 	socket.emit('welcome', rooms);
 });
