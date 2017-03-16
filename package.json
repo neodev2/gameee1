@@ -6,6 +6,6 @@
 	},
 	"dependencies": {
 		"express": "*",
-		"twig": "*"
+		"socket.io": "*"
 	}
 }
