@@ -70,7 +70,7 @@ io.on('connection', function(socket){
         h: 100,
         d: 100,
         x: 0,
-        y: 0,
+        y: 10,
         z: 0
     });
     /*socket.join(rooms[0].name);*/
