@@ -75,7 +75,7 @@ io.on('connection', function(socket){
     });
     /*socket.join(rooms[0].name);*/
     
-    socket.on('disconnect', function() {
+    socket.on('disconnect', function(){
         io.emit('disconnect', socket.id+' disconnected');
         
         for(var i=0; i<rooms[0].users.length; i++){
@@ -83,10 +83,20 @@ io.on('connection', function(socket){
                 rooms[0].users.splice(i, 1);
             }
         }
-   });
+    });
     
-    var interval1 = setInterval(function(){
-        socket.emit('welcome', rooms);
+    socket.on('move', function(data){
+        for(var i=0; i<rooms[0].users.length; i++){
+            if(rooms[0].users[i].name == socket.id){
+                rooms[0].users[i].x = data.x;
+                rooms[0].users[i].y = data.y;
+                rooms[0].users[i].z = data.z;
+            }
+        }
+    });
+    
+    var intervalGameUpdate = setInterval(function(){
+        socket.emit('intervalGameUpdate', rooms);
     }, 50);
 });
 
