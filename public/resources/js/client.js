@@ -307,7 +307,7 @@ socket.on('intervalGameUpdate', function(data) {
 
     for(var i=0; i<data[0].users.length; i++){
         
-        if(scene.getObjectByName(data[0].users[i].name) != socket.id){
+        if(data[0].users[i].name != socket.id){
             
             if(scene.getObjectByName(data[0].users[i].name) == undefined){
                 material = new THREE.MeshPhongMaterial( { specular: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
@@ -331,8 +331,8 @@ socket.on('intervalGameUpdate', function(data) {
             xxx.position.z = data[0].users[i].z;
             
         }else{
-	    console.log('skipping same id');
-	}
+	        console.log('skipping same id');
+	    }
         
     }
     
