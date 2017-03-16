@@ -307,27 +307,31 @@ socket.on('intervalGameUpdate', function(data) {
 
     for(var i=0; i<data[0].users.length; i++){
         
-        if(scene.getObjectByName(data[0].users[i].name) == undefined){
-            material = new THREE.MeshPhongMaterial( { specular: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
+        if(scene.getObjectByName(data[0].users[i].name) != socket.id){
+            
+            if(scene.getObjectByName(data[0].users[i].name) == undefined){
+                material = new THREE.MeshPhongMaterial( { specular: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
 
-            var mesh = new THREE.Mesh( geometry, material );
-            mesh.position.x = 0;
-            mesh.position.y = 0;
-            mesh.position.z = 0;
-            mesh.name = data[0].users[i].name;
-            scene.add( mesh );
+                var mesh = new THREE.Mesh( geometry, material );
+                mesh.position.x = 0;
+                mesh.position.y = 10;
+                mesh.position.z = 0;
+                mesh.name = data[0].users[i].name;
+                scene.add( mesh );
 
-            material.color.setHSL( Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
+                material.color.setHSL( Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
 
-            objects.push( mesh );
+                objects.push( mesh );
+            }
+
+
+            var xxx = scene.getObjectByName(data[0].users[i].name);
+            xxx.position.x = data[0].users[i].x;
+            xxx.position.y = data[0].users[i].y;
+            xxx.position.z = data[0].users[i].z;
+            
         }
         
-        
-        var xxx = scene.getObjectByName(data[0].users[i].name);
-        xxx.position.x = data[0].users[i].x;
-        xxx.position.y = data[0].users[i].y;
-        xxx.position.z = data[0].users[i].z;
-
     }
     
 });
