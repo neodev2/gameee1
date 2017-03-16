@@ -73,7 +73,7 @@ io.on('connection', function(socket){
         y: 0,
         z: 0
     });*/
-	//socket.join(rooms[0].name);
+	/*socket.join(rooms[0].name);*/
 	socket.emit('welcome', rooms);
 });
 
