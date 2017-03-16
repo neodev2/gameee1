@@ -4,7 +4,7 @@ $(window).load(function(){
     
     socket.on('intervalGameUpdate', function(data) {
         console.log(data);
-        $('body').html( JSON.stringify(data, null, 2) );
+        $('#div1').html( JSON.stringify(data, null, 2) );
     });
     
     socket.on('disconnect', function(data) {
@@ -12,5 +12,14 @@ $(window).load(function(){
     });
     
     //socket.emit('XXX', {XXX: 'XXX'});
+    
+    
+    $('#input1, #input2, #input3').on('input', function(){
+        socket.emit('move', {
+            x: $('#input1').val(),
+            y: $('#input2').val(),
+            z: $('#input3').val()
+        });
+    });
     
 });
