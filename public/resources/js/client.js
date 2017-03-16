@@ -1,9 +1,6 @@
 var socket = io();
 
 
-socket.on('disconnect', function(data) {
-    console.log(data);
-});
 
 
 
@@ -335,6 +332,10 @@ socket.on('intervalGameUpdate', function(data) {
     
 });
 
-
+socket.on('disconnect', function(data){
+    console.log(data);
+    var mesh = scene.getObjectByName(data.id);
+    scene.remove(mesh);
+});
 
 
