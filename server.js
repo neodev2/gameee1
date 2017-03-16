@@ -13,13 +13,13 @@ var rooms = [
 			},
 			{
 				name: 'gigi',
-				w: 100,
-				h: 100,
-				d: 100,
-				x: 0,
-				y: 0,
-				z: 0
-			},
+				w: 50,
+				h: 50,
+				d: 50,
+				x: 200,
+				y: 200,
+				z: 200
+			}
 		],
 		objects: [
 			{
@@ -49,27 +49,47 @@ var rooms = [
 	}
 ];
 
+const
+	app    = require('express')(),
+    server = require('http').createServer(app),
+    io     = require('socket.io')(server);
+
+server.listen(process.env.PORT || 8000);
+
+app.use('/resources', express.static(__dirname+'/public/resources'));
+
+app.get('/', function(req, res){
+	res.sendFile(__dirname + '/views/index.html');
+});
+
+io.on('connection', function(socket){
+	rooms[0].users.push({
+        name: socket.id,
+        w: 100,
+        h: 100,
+        d: 100,
+        x: 0,
+        y: 0,
+        z: 0
+    });
+	socket.join(rooms[0].name);
+	socket.emit('welcome', 'welcome');
+    
+    console.log(rooms);
+});
 
 
-var intervalGameUpdate = setInterval(function(){
-	
-	// display online users
-	var onlineUsers = 0;
-	for(var i in rooms){
-		onlineUsers += rooms[i].users.length;
-	}
-	console.log(onlineUsers);
-	
-	
-	
-	// stream coordinates to players
-	
-	
-}, 50);
 
-/*this.on.connection = function(){
-	var idTok = '_'+Date.now();
-	users.push(idTok);
-	rooms.push(idTok);
-	idTok.emit('welcome');
-}*/
+
+
+
+
+
+
+
+
+
+
+
+
+
