@@ -331,7 +331,7 @@ socket.on('intervalGameUpdate', function(data) {
             xxx.position.z = data[0].users[i].z;
             
         }else{
-	        console.log('skipping same id');
+	        //console.log('skipping same id');
 	    }
         
     }
