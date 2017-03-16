@@ -51,8 +51,8 @@ var rooms = [
 
 const
     express     = require('express'),
-	app         = express(),
-	server      = require('http').Server(app),
+    app         = express(),
+    server      = require('http').Server(app),
     io          = require('socket.io')(server);
 
 server.listen(process.env.PORT || 8000);
@@ -60,11 +60,11 @@ server.listen(process.env.PORT || 8000);
 app.use('/resources', express.static(__dirname+'/public/resources'));
 
 app.get('/', function(req, res){
-	res.sendFile(__dirname + '/views/index.html');
+    res.sendFile(__dirname + '/views/index.html');
 });
 
 io.on('connection', function(socket){
-	rooms[0].users.push({
+    rooms[0].users.push({
         name: socket.id,
         w: 100,
         h: 100,
@@ -73,9 +73,20 @@ io.on('connection', function(socket){
         y: 0,
         z: 0
     });
-	/*socket.join(rooms[0].name);*/
+    /*socket.join(rooms[0].name);*/
+    
+    socket.on('disconnect', function() {
+        io.emit('disconnect', socket.id+' disconnected');
+        
+        for(var i=0; i<rooms[0].users.length; i++){
+            if(rooms[0].users[i].name == socket.id){
+                rooms[0].users.splice(i, 1);
+            }
+        }
+   });
+    
     var interval1 = setInterval(function(){
-	    socket.emit('welcome', rooms);
+        socket.emit('welcome', rooms);
     }, 50);
 });
 
