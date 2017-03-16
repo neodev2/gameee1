@@ -342,6 +342,11 @@ socket.on('disconnect', function(data){
     console.log(data);
     var mesh = scene.getObjectByName(data.id);
     scene.remove(mesh);
+    for(var i=0; i<objects.length; i++){
+        if(objects[i].name == data.id){
+            objects.splice(i, 1);
+        }
+    }
 });
 
 
