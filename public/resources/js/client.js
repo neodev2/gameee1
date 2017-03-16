@@ -335,7 +335,7 @@ if ( havePointerLock ) {
 socket.on('intervalGameUpdate', function(data) {
     //console.log(data);
     //$('#div1').html( JSON.stringify(data, null, 2) );
-    var xxx = scene.getChildByName('xxx');
+    var xxx = scene.getObjectByName('xxx');
     xxx.position.x = data[0].users[0].x;
     xxx.position.y = data[0].users[0].y;
     xxx.position.z = data[0].users[0].z;
