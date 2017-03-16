@@ -74,9 +74,7 @@ io.on('connection', function(socket){
         z: 0
     });*/
 	//socket.join(rooms[0].name);
-	socket.emit('welcome', 'welcome');
-    
-    console.log(rooms);
+	socket.emit('welcome', rooms);
 });
 
 
