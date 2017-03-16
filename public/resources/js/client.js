@@ -6,6 +6,10 @@ $(window).load(function(){
         console.log(data);
     });
     
+    socket.on('disconnect', function(data) {
+        console.log(data);
+    });
+    
     //socket.emit('XXX', {XXX: 'XXX'});
     
 });
