@@ -276,7 +276,7 @@ if ( havePointerLock ) {
 
 					prevTime = time;
                     
-                    console.log(controls.getObject().position);
+					
                     socket.emit('move', {
                         x: controls.getObject().position.x,
                         y: controls.getObject().position.y,
