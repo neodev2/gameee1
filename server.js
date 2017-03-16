@@ -1,4 +1,4 @@
-/*var rooms = [
+var rooms = [
 	{
 		name: 'room0',
 		users: [
@@ -47,16 +47,13 @@
 		users: [],
 		objects: []
 	}
-];*/
+];
 
 const
     express     = require('express'),
 	app         = express(),
-	server      = require('http').Server(app);
-
-	//app    = require('express')(),
-    //server = require('http').createServer(app);
-    //io     = require('socket.io')(server);
+	server      = require('http').Server(app),
+    io          = require('socket.io')(server);
 
 server.listen(process.env.PORT || 8000);
 
