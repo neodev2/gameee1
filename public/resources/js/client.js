@@ -1,14 +1,5 @@
 var socket = io();
 
-var gameStuff;
-
-socket.on('intervalGameUpdate', function(data) {
-    //console.log(data);
-    //$('#div1').html( JSON.stringify(data, null, 2) );
-    
-    gameStuff = data;
-    
-});
 
 socket.on('disconnect', function(data) {
     console.log(data);
@@ -213,33 +204,7 @@ if ( havePointerLock ) {
 
 				// objects
 
-				geometry = new THREE.BoxGeometry( 20, 20, 20 );
-
-				for ( var i = 0, l = geometry.faces.length; i < l; i ++ ) {
-
-					var face = geometry.faces[ i ];
-					face.vertexColors[ 0 ] = new THREE.Color().setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-					face.vertexColors[ 1 ] = new THREE.Color().setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-					face.vertexColors[ 2 ] = new THREE.Color().setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-
-				}
-
-				for(var i=0; i<gameStuff[0].users.length; i++){
-
-					material = new THREE.MeshPhongMaterial( { specular: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
-
-					var mesh = new THREE.Mesh( geometry, material );
-					mesh.position.x = 0;
-					mesh.position.y = 0;
-					mesh.position.z = 0;
-                    mesh.name = data[0].users[i].name;
-					scene.add( mesh );
-
-					material.color.setHSL( Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-
-					objects.push( mesh );
-
-				}
+				//...
 
 				//
 
@@ -328,8 +293,38 @@ if ( havePointerLock ) {
 
 
 socket.on('intervalGameUpdate', function(data) {
+    //console.log(data);
+    //$('#div1').html( JSON.stringify(data, null, 2) );
     
+    
+    geometry = new THREE.BoxGeometry( 20, 20, 20 );
+
+    for ( var i = 0, l = geometry.faces.length; i < l; i ++ ) {
+
+        var face = geometry.faces[ i ];
+        face.vertexColors[ 0 ] = new THREE.Color().setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
+        face.vertexColors[ 1 ] = new THREE.Color().setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
+        face.vertexColors[ 2 ] = new THREE.Color().setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
+
+    }
+
     for(var i=0; i<data[0].users.length; i++){
+        
+        if(scene.getObjectByName(data[0].users[i].name) == undefined){
+            material = new THREE.MeshPhongMaterial( { specular: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
+
+            var mesh = new THREE.Mesh( geometry, material );
+            mesh.position.x = 0;
+            mesh.position.y = 0;
+            mesh.position.z = 0;
+            mesh.name = data[0].users[i].name;
+            scene.add( mesh );
+
+            material.color.setHSL( Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
+
+            objects.push( mesh );
+        }
+        
         
         var xxx = scene.getObjectByName(data[0].users[i].name);
         xxx.position.x = data[0].users[i].x;
