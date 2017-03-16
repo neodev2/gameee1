@@ -330,7 +330,9 @@ socket.on('intervalGameUpdate', function(data) {
             xxx.position.y = data[0].users[i].y;
             xxx.position.z = data[0].users[i].z;
             
-        }
+        }else{
+	    console.log('skipping same id');
+	}
         
     }
     
