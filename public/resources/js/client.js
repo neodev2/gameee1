@@ -1,5 +1,7 @@
 var socket = io();
 
+var gameStuff;
+
 
 
 socket.on('disconnect', function(data) {
@@ -216,7 +218,7 @@ if ( havePointerLock ) {
 
 				}
 
-				for(var i=0; i<data[0].users.length; i++){
+				for(var i=0; i<gameStuff[0].users.length; i++){
 
 					material = new THREE.MeshPhongMaterial( { specular: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
 
@@ -321,6 +323,8 @@ if ( havePointerLock ) {
 socket.on('intervalGameUpdate', function(data) {
     //console.log(data);
     //$('#div1').html( JSON.stringify(data, null, 2) );
+    
+    gameStuff = data;
     
     for(var i=0; i<data[0].users.length; i++){
         
