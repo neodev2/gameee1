@@ -9,16 +9,7 @@ socket.on('disconnect', function(data) {
     console.log(data);
 });
 
-//socket.emit('XXX', {XXX: 'XXX'});
 
-
-$('#input1, #input2, #input3').on('input', function(){
-    socket.emit('move', {
-        x: $('#input1').val(),
-        y: $('#input2').val(),
-        z: $('#input3').val()
-    });
-});
 
 
 var camera, scene, renderer;
@@ -313,6 +304,13 @@ if ( havePointerLock ) {
 					}
 
 					prevTime = time;
+                    
+                    console.log(controls.getObject().position);
+                    socket.emit('move', {
+                        x: controls.getObject().position.x,
+                        y: controls.getObject().position.y,
+                        z: controls.getObject().position.z
+                    });
 
 				}
 
