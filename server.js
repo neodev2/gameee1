@@ -2,7 +2,7 @@ var rooms = [
 	{
 		name: 'room0',
 		users: [
-			{
+			/*{
 				name: 'admin',
 				w: 100,
 				h: 100,
@@ -19,7 +19,7 @@ var rooms = [
 				x: 200,
 				y: 200,
 				z: 200
-			}
+			}*/
 		],
 		objects: [
 			{
