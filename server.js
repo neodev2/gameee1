@@ -24,21 +24,23 @@ var rooms = [
 		objects: [
 			{
 				name: 'cube5rf4yt',
-				w: 100,
-				h: 100,
-				d: 100,
-				x: 0,
-				y: 0,
-				z: 0
+				w: 20,
+				h: 20,
+				d: 20,
+				x: 300,
+				y: 10,
+				z: -150,
+				c: 'blue'
 			},
 			{
 				name: 'cubeE8hh4k',
-				w: 50,
-				h: 50,
-				d: 50,
-				x: 10,
+				w: 20,
+				h: 20,
+				d: 20,
+				x: 400,
 				y: 10,
-				z: 10
+				z: 200,
+				c: 'blue'
 			}
 		]
 	},
@@ -66,9 +68,9 @@ app.get('/', function(req, res){
 io.on('connection', function(socket){
     rooms[0].users.push({
         name: socket.id,
-        w: 100,
-        h: 100,
-        d: 100,
+        w: 20,
+        h: 20,
+        d: 20,
         x: 0,
         y: 10,
         z: 0
@@ -98,12 +100,54 @@ io.on('connection', function(socket){
         }
     });
     
+    socket.on('fire', function(data){
+        fire(socket.id, data);
+    });
+    
     var intervalGameUpdate = setInterval(function(){
         socket.emit('intervalGameUpdate', rooms);
     }, 50);
 });
 
-
+function fire(socketId, data){
+	//console.log(socketId);
+	//console.log(data.pos);
+	//console.log(data.dir);
+	//console.log(data.weap);
+	
+	var w, h, d;
+	
+	if(data.weap == 'machinegun'){
+		w = 4;
+		h = 4;
+		d = 4;
+	}
+	
+	var name = 'bullet'+Date.now();
+	
+	rooms[0].objects.push({
+		name: name,
+		w: w,
+		h: h,
+		d: d,
+		x: data.pos.x,
+		y: data.pos.y,
+		z: data.pos.z,
+		c: 'orange'
+	});
+	
+	var intervalBlabla = setInterval(function(){
+		
+		for(var i=0; i<rooms[0].objects.length; i++){
+            if(rooms[0].objects[i].name == name){
+                rooms[0].objects[i].x += data.dir.x * 2;
+                rooms[0].objects[i].y += data.dir.y * 2;
+                rooms[0].objects[i].z += data.dir.z * 2;
+            }
+        }
+        
+	}, 50);
+}
 
 
 
