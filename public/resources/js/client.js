@@ -226,7 +226,7 @@ function animate() {
 	
 	// edits (commented out)
 	
-    //requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
     
     //
 
@@ -370,7 +370,7 @@ socket.on('intervalGameUpdate', function(data) {
     //console.log(data);
     //$('#div1').html( JSON.stringify(data, null, 2) );
     
-    animate();
+    //animate();
 
     // create/move users
 
