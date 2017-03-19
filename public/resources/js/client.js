@@ -69,7 +69,7 @@ function update(data){
 	        
 	        ctx.fillStyle = data[id].collision == true ? 'red' : 'black';*/
 	        
-	        ctx.clearRect(shapes[id].x, shapes[id].y, shapes[id].w, shapes[id].h/*, shapes[id].d*/);
+	        ctx.clearRect(shapes[id].x-26, shapes[id].y-50, shapes[id].w+26, shapes[id].h+25/*, shapes[id].d*/);
 	        
 	        shapes[id].x = data[id].x;
 	        shapes[id].y = data[id].y;
