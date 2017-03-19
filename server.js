@@ -52,61 +52,82 @@ var rooms = [
 ];
 
 const
-    express     = require('express'),
-    app         = express(),
-    server      = require('http').Server(app),
-    io          = require('socket.io')(server);
+	express	 = require('express'),
+	app		 = express(),
+	server	  = require('http').Server(app),
+	io		  = require('socket.io')(server);
 
 server.listen(process.env.PORT || 8000);
 
 app.use('/resources', express.static(__dirname+'/public/resources'));
 
 app.get('/', function(req, res){
-    res.sendFile(__dirname + '/views/index.html');
+	res.sendFile(__dirname + '/views/index.html');
 });
 
+
+
+
 io.on('connection', function(socket){
-    rooms[0].users.push({
-        name: socket.id,
-        w: 20,
-        h: 20,
-        d: 20,
-        x: 0,
-        y: 10,
-        z: 0
-    });
-    /*socket.join(rooms[0].name);*/
-    
-    socket.on('disconnect', function(){
-        io.emit('disconnect', {
-            id: socket.id,
-            info: 'disconnected'
-        });
-        
-        for(var i=0; i<rooms[0].users.length; i++){
-            if(rooms[0].users[i].name == socket.id){
-                rooms[0].users.splice(i, 1);
-            }
-        }
-    });
-    
-    socket.on('move', function(data){
-        for(var i=0; i<rooms[0].users.length; i++){
-            if(rooms[0].users[i].name == socket.id){
-                rooms[0].users[i].x = data.x;
-                rooms[0].users[i].y = data.y;
-                rooms[0].users[i].z = data.z;
-            }
-        }
-    });
-    
-    socket.on('fire', function(data){
-        fire(socket.id, data);
-    });
-    
-    var intervalGameUpdate = setInterval(function(){
-        socket.emit('intervalGameUpdate', rooms);
-    }, 50);
+	
+	// create user
+	
+	rooms[0].users.push({
+		name: socket.id,
+		w: 20,
+		h: 20,
+		d: 20,
+		x: 0,
+		y: 10,
+		z: 0
+	});
+	/*socket.join(rooms[0].name);*/
+	
+	// delete user, emit
+	
+	socket.on('disconnect', function(){
+		
+		io.emit('disconnect', {
+			id: socket.id,
+			info: 'disconnected'
+		});
+		
+		for(let i=0; i<rooms[0].users.length; i++){
+			if(rooms[0].users[i].name == socket.id){
+				
+				rooms[0].users.splice(i, 1);
+				
+			}
+		}
+		
+	});
+	
+	// update user x y z
+	
+	socket.on('move', function(data){
+		
+		for(let i=0; i<rooms[0].users.length; i++){
+			if(rooms[0].users[i].name == socket.id){
+				
+				rooms[0].users[i].x = data.x;
+				rooms[0].users[i].y = data.y;
+				rooms[0].users[i].z = data.z;
+				
+			}
+		}
+		
+	});
+	
+	
+	socket.on('fire', function(data){
+		fire(socket.id, data);
+	});
+	
+	
+	var intervalGameUpdate = setInterval(function(){
+		socket.emit('intervalGameUpdate', rooms);
+	}, 50);
+	
 });
 
 function fire(socketId, data){
@@ -114,6 +135,8 @@ function fire(socketId, data){
 	//console.log(data.pos);
 	//console.log(data.dir);
 	//console.log(data.weap);
+	
+	// create bullet, move interval
 	
 	var w, h, d;
 	
@@ -139,14 +162,17 @@ function fire(socketId, data){
 	var intervalBlabla = setInterval(function(){
 		
 		for(var i=0; i<rooms[0].objects.length; i++){
-            if(rooms[0].objects[i].name == name){
-                rooms[0].objects[i].x += data.dir.x * 2;
-                rooms[0].objects[i].y += data.dir.y * 2;
-                rooms[0].objects[i].z += data.dir.z * 2;
-            }
-        }
-        
+			if(rooms[0].objects[i].name == name){
+				
+				rooms[0].objects[i].x += data.dir.x * 2;
+				rooms[0].objects[i].y += data.dir.y * 2;
+				rooms[0].objects[i].z += data.dir.z * 2;
+				
+			}
+		}
+		
 	}, 50);
+	
 }
 
 
