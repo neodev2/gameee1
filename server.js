@@ -1,56 +1,3 @@
-var rooms = [
-	{
-		name: 'room0',
-		users: [
-			/*{
-				name: 'admin',
-				w: 100,
-				h: 100,
-				d: 100,
-				x: 0,
-				y: 0,
-				z: 0
-			},
-			{
-				name: 'gigi',
-				w: 50,
-				h: 50,
-				d: 50,
-				x: 200,
-				y: 200,
-				z: 200
-			}*/
-		],
-		objects: [
-			{
-				name: 'cube5rf4yt',
-				w: 20,
-				h: 20,
-				d: 20,
-				x: 300,
-				y: 10,
-				z: -150,
-				c: 'blue'
-			},
-			{
-				name: 'cubeE8hh4k',
-				w: 20,
-				h: 20,
-				d: 20,
-				x: 400,
-				y: 10,
-				z: 200,
-				c: 'blue'
-			}
-		]
-	},
-	{
-		name: 'room1',
-		users: [],
-		objects: []
-	}
-];
-
 const
 	express	 = require('express'),
 	app		 = express(),
@@ -65,120 +12,136 @@ app.get('/', function(req, res){
 	res.sendFile(__dirname + '/views/index.html');
 });
 
+/* - - - - - - - - - - - */
 
 
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+
+var users = {};
 
 io.on('connection', function(socket){
 	
-	// create user
+	// on connect
 	
-	rooms[0].users.push({
-		name: socket.id,
-		w: 20,
-		h: 20,
-		d: 20,
-		x: 0,
-		y: 10,
-		z: 0
-	});
-	/*socket.join(rooms[0].name);*/
+	users['_'+socket.id] = {
+		w: 25,
+		h: 25,
+		d: 25,
+		x: getRandomInt(0, 1100),
+		y: getRandomInt(0, 700),
+		z: getRandomInt(0, 700)
+	};
 	
-	// delete user, emit
+	console.log(users);
+	
+	
+	// on disconnect
 	
 	socket.on('disconnect', function(){
 		
-		io.emit('disconnect', {
-			id: socket.id,
-			info: 'disconnected'
-		});
+		delete users['_'+socket.id];
 		
-		for(let i=0; i<rooms[0].users.length; i++){
-			if(rooms[0].users[i].name == socket.id){
-				
-				rooms[0].users.splice(i, 1);
-				
-			}
-		}
+		io.emit('disconnect', '_'+socket.id);
 		
-	});
-	
-	// update user x y z
-	
-	socket.on('move', function(data){
-		
-		for(let i=0; i<rooms[0].users.length; i++){
-			if(rooms[0].users[i].name == socket.id){
-				
-				rooms[0].users[i].x = data.x;
-				rooms[0].users[i].y = data.y;
-				rooms[0].users[i].z = data.z;
-				
-			}
-		}
+		console.log(users);
 		
 	});
 	
 	
-	socket.on('fire', function(data){
-		fire(socket.id, data);
+	// on action
+	
+	socket.on('x-', function(){
+		
+		blabla('_'+socket.id, 'x-');
+		
 	});
 	
+	socket.on('x+', function(){
+		
+		blabla('_'+socket.id, 'x+');
+		
+	});
+	
+	socket.on('y-', function(){
+		
+		blabla('_'+socket.id, 'y-');
+		
+	});
+	
+	socket.on('y+', function(){
+		
+		blabla('_'+socket.id, 'y+');
+		
+	});
+		
+	
+	// game update interval
 	
 	var intervalGameUpdate = setInterval(function(){
-		socket.emit('intervalGameUpdate', rooms);
+		socket.emit('game_update', users);
 	}, 50);
 	
 });
 
-function fire(socketId, data){
-	//console.log(socketId);
-	//console.log(data.pos);
-	//console.log(data.dir);
-	//console.log(data.weap);
+
+function blabla(id, type){
 	
-	// create bullet, move interval
-	
-	var w, h, d;
-	
-	if(data.weap == 'machinegun'){
-		w = 4;
-		h = 4;
-		d = 4;
+	for(let i in users){
+		if(i != id){
+			
+			if (users[id].x < users[i].x + users[i].w &&
+				users[id].x + users[id].w > users[i].x &&
+				users[id].y < users[i].y + users[i].h &&
+				users[id].h + users[id].y > users[i].y) {
+				//console.log('collision');
+				users[id].collision = true;
+			}else{
+				users[id].collision = false;
+			}
+			
+		}
 	}
 	
-	var name = 'bullet'+Date.now();
-	
-	rooms[0].objects.push({
-		name: name,
-		w: w,
-		h: h,
-		d: d,
-		x: data.pos.x,
-		y: data.pos.y,
-		z: data.pos.z,
-		c: 'orange'
-	});
-	
-	var intervalBlabla = setInterval(function(){
+	if(users[id].collision != true){
 		
-		for(var i=0; i<rooms[0].objects.length; i++){
-			if(rooms[0].objects[i].name == name){
-				
-				rooms[0].objects[i].x += data.dir.x * 2;
-				rooms[0].objects[i].y += data.dir.y * 2;
-				rooms[0].objects[i].z += data.dir.z * 2;
-				
-			}
+		if(type == 'x-'){
+			users[id].x -= 1;
+		}
+		else if(type == 'x+'){
+			users[id].x += 1;
+		}
+		else if(type == 'y-'){
+			users[id].y -= 1;
+		}
+		else if(type == 'y+'){
+			users[id].y += 1;
 		}
 		
-	}, 50);
+	}else{
+		
+		// move opposite way (wall reject)
+		
+		let px = 3;
+		
+		if(type == 'x-'){
+			users[id].x += px;
+		}
+		else if(type == 'x+'){
+			users[id].x -= px;
+		}
+		else if(type == 'y-'){
+			users[id].y += px;
+		}
+		else if(type == 'y+'){
+			users[id].y -= px;
+		}
+		
+	}
 	
 }
-
-
-
-
-
 
 
 
