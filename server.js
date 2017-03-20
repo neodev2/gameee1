@@ -19,7 +19,7 @@ var objects = {};
 
 // populate objects
 
-/*for(let i=0; i<30; i++){
+for(let i=0; i<30; i++){
 	
 	var randomX = ['10', '30', '50', '70', '90', '110', '130', '150'];
 	var randomY = ['10', '30', '50'];
@@ -36,7 +36,7 @@ var objects = {};
 		}
 	};
 	
-}*/
+}
 
 
 
