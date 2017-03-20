@@ -15,24 +15,28 @@ app.get('/', function(req, res){
 /* - - - - - - - - - - - */
 
 
-var users = {};
 var objects = {};
 
 // populate objects
 
-for(let i=0; i<30; i++){
+/*for(let i=0; i<30; i++){
 	
 	var randomX = ['10', '30', '50', '70', '90', '110', '130', '150'];
 	var randomY = ['10', '30', '50'];
 	var randomZ = ['10', '30', '50', '70', '90', '110', '130', '150'];
 	
 	objects['cube'+i] = {
-		x: randomX[Math.floor(Math.random()*randomX.length)],
-		y: randomY[Math.floor(Math.random()*randomY.length)],
-		z: randomZ[Math.floor(Math.random()*randomZ.length)]
+		w: 20,
+		h: 20,
+		d: 20,
+		position: {
+			x: randomX[Math.floor(Math.random()*randomX.length)],
+			y: randomY[Math.floor(Math.random()*randomY.length)],
+			z: randomZ[Math.floor(Math.random()*randomZ.length)]
+		}
 	};
 	
-}
+}*/
 
 
 
@@ -40,7 +44,7 @@ io.on('connection', function(socket){
 	
 	// on connect
 	
-	users['_'+socket.id] = {
+	objects['_'+socket.id] = {
 		w: 20,
 		h: 20,
 		d: 20,
@@ -49,25 +53,20 @@ io.on('connection', function(socket){
 			y: 10,
 			z: 0
 		}
-		//rotation: {
-		//	x: 0,
-		//	y: 0,
-		//	z: 0
-		//}
 	};
 	
-	console.log(users);
+	//console.log(objects);
 	
 	
 	// on disconnect
 	
 	socket.on('disconnect', function(){
 		
-		delete users['_'+socket.id];
+		delete objects['_'+socket.id];
 		
 		io.emit('disconnect', '_'+socket.id);
 		
-		console.log(users);
+		//console.log(objects);
 		
 	});
 	
@@ -98,22 +97,12 @@ io.on('connection', function(socket){
 		
 	});*/
 	
-	socket.on('position', function(x, y, z){
-		users['_'+socket.id].position.x = x;
-		users['_'+socket.id].position.y = y;
-		users['_'+socket.id].position.z = z;
+	socket.on('position', function(data){
+		objects['_'+socket.id].position.x = data.x;
+		objects['_'+socket.id].position.y = data.y;
+		objects['_'+socket.id].position.z = data.z;
 	});
 	
-	socket.on('rotation', function(x, y, z){
-		users['_'+socket.id].rotation.x = x;
-		users['_'+socket.id].rotation.y = y;
-		users['_'+socket.id].rotation.z = z;
-	});
-	
-	
-	// create objects
-	
-	socket.emit('createObjects', objects);
 	
 	// delete object
 	
@@ -128,10 +117,55 @@ io.on('connection', function(socket){
 	});
 	
 	
+	// create bullet
+	
+	socket.on('createBullet', function(data){
+		
+		objects[data.id] = {
+			w: 1,
+			h: 1,
+			d: 1,
+			position: {
+				x: data.position.x,
+				y: data.position.y,
+				z: data.position.z
+			},
+			direction: {
+				x: data.direction.x,
+				y: data.direction.y,
+				z: data.direction.z
+			}
+		};
+		
+		// move bullet
+		
+		var interval = setInterval(function(){
+			objects[data.id].position.x += objects[data.id].direction.x * 2;
+			objects[data.id].position.y += objects[data.id].direction.y * 2;
+			objects[data.id].position.z += objects[data.id].direction.z * 2;
+			
+			// auto explode bullet after ms
+			
+			if( Date.now() - parseInt(data.id.replace(/^bullet/, '') ) >= 3000){
+				//console.log('boom');
+				clearInterval(interval);
+				delete objects[data.id];
+				//console.log(objects);
+				
+				io.emit('deleteObject', data.id);
+			}
+			
+		}, 20);
+		
+	});
+	
+	
 	// game update interval
 	
 	var intervalGameUpdate = setInterval(function(){
-		socket.emit('game_update', users);
+		
+		socket.emit('game_update', objects);
+		
 	}, 20);
 	
 });

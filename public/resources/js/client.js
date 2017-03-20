@@ -85,21 +85,21 @@ var canJump = false;
 var prevTime = performance.now();
 var velocity = new THREE.Vector3();
 
-function init() {
+function init(){
 
-	camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
+	camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
 
 	scene = new THREE.Scene();
-	scene.fog = new THREE.Fog( 0xffffff, 0, 750 );
+	scene.fog = new THREE.Fog(0xffffff, 0, 750);
 
-	light = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 0.75 );
-	light.position.set( 0.5, 1, 0.75 );
-	scene.add( light );
+	light = new THREE.HemisphereLight(0xeeeeff, 0x777788, 0.75);
+	light.position.set(0.5, 1, 0.75);
+	scene.add(light);
 
-	controls = new THREE.PointerLockControls( camera );
-	scene.add( controls.getObject() );
+	controls = new THREE.PointerLockControls(camera);
+	scene.add(controls.getObject());
 
-	var onKeyDown = function ( event ) {
+	var onKeyDown = function(event){
 
 		switch ( event.keyCode ) {
 
@@ -131,7 +131,7 @@ function init() {
 
 	};
 
-	var onKeyUp = function ( event ) {
+	var onKeyUp = function(event){
 
 		switch( event.keyCode ) {
 
@@ -159,8 +159,8 @@ function init() {
 
 	};
 
-	document.addEventListener( 'keydown', onKeyDown, false );
-	document.addEventListener( 'keyup', onKeyUp, false );
+	document.addEventListener('keydown', onKeyDown, false);
+	document.addEventListener('keyup', onKeyUp, false);
 
 	//raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
 	raycaster = new THREE.Raycaster(controls.getObject().position, camera);
@@ -169,18 +169,18 @@ function init() {
 	//createObjects();
 	
 	renderer = new THREE.WebGLRenderer();
-	renderer.setClearColor( 0xffffff );
-	renderer.setPixelRatio( window.devicePixelRatio );
-	renderer.setSize( window.innerWidth, window.innerHeight );
-	document.body.appendChild( renderer.domElement );
+	renderer.setClearColor(0xffffff);
+	renderer.setPixelRatio(window.devicePixelRatio);
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	document.body.appendChild(renderer.domElement);
 
 	//
 
-	window.addEventListener( 'resize', onWindowResize, false );
+	window.addEventListener('resize', onWindowResize, false);
 
 }
 
-function onWindowResize() {
+function onWindowResize(){
 
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
@@ -206,20 +206,17 @@ function animate(data){
 				
 				//console.log('object with name "'+id+'" not found in scene. Creating...');
 				
-				createObject(
-					id,
-					data[id].w,
-					data[id].h,
-					data[id].d,
-					
-					data[id].position.x,
-					data[id].position.y,
-					data[id].position.z
-					
-					//data[id].rotation.x,
-					//data[id].rotation.y,
-					//data[id].rotation.z
-				);
+				createObject({
+					id: id,
+					w: data[id].w,
+					h: data[id].h,
+					d: data[id].d,
+					position: {
+						x: data[id].position.x,
+						y: data[id].position.y,
+						z: data[id].position.z
+					}
+				});
 		        
 		    }else{
 			    
@@ -277,8 +274,6 @@ function animate(data){
         // stop camera when hit an object
         
         if(intersections.length > 0 && intersections[0].distance <= 5){
-	        
-	        socket.emit('deleteObject', intersections[0].object.name);
 			
 			if(intersections[0].faceIndex == 8 || intersections[0].faceIndex == 9){ // front
 				controls.getObject().position.z = intersections[0].point.z+5;
@@ -345,21 +340,10 @@ function animate(data){
 	}
 	
 	
-	socket.emit('position',
-		controls.getObject().position.x,
-		controls.getObject().position.y,
-		controls.getObject().position.z
-	);
-	
-	/*var cameraDirection = controls.getDirection(new THREE.Vector3(0, 0, 0)).clone();
-	socket.emit('rotation',
-		cameraDirection.x,
-		cameraDirection.y,
-		cameraDirection.z
-	);*/
+	socket.emit('position', controls.getObject().position);
 	
 
-	renderer.render( scene, camera );
+	renderer.render(scene, camera);
 
 }
 
@@ -395,75 +379,32 @@ function createFloor(){
 	
 }
 
-function createObjects(data){
+function createObject(data){
 	
-	// objects
-
-	geometry = new THREE.BoxGeometry(20, 20, 20);
+	geometry = new THREE.BoxGeometry(data.w, data.h, data.d);
 
 	for(let i=0; i<geometry.faces.length; i++){
-
 		var face = geometry.faces[i];
-		face.vertexColors[0] = new THREE.Color().setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-		face.vertexColors[1] = new THREE.Color().setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-		face.vertexColors[2] = new THREE.Color().setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-
-	}
-
-	for(let id in data){
-
-		material = new THREE.MeshPhongMaterial({specular: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors});
-
-		var mesh = new THREE.Mesh(geometry, material);
-		
-		mesh.position.x = data[id].x;
-		mesh.position.y = data[id].y;
-		mesh.position.z = data[id].z;
-		
-		scene.add(mesh);
-
-		material.color.setHSL( Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-		
-		mesh.name = id;
-		objects.push(mesh);
-
-	}
-	
-	
-}
-
-function createObject(id, w, h, d, pos_x, pos_y, pos_z/*, rot_x, rot_y, rot_z*/){
-	
-	geometry = new THREE.BoxGeometry(w, h, d);
-
-	for(let i=0; i<geometry.faces.length; i++){
-
-		var face = geometry.faces[ i ];
-		face.vertexColors[ 0 ] = new THREE.Color().setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-		face.vertexColors[ 1 ] = new THREE.Color().setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-		face.vertexColors[ 2 ] = new THREE.Color().setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-
+		face.vertexColors[0] = new THREE.Color().setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75);
+		face.vertexColors[1] = new THREE.Color().setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75);
+		face.vertexColors[2] = new THREE.Color().setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75);
 	}
 
 	
-	material = new THREE.MeshPhongMaterial( { specular: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
+	material = new THREE.MeshPhongMaterial({specular: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors});
 
-	mesh = new THREE.Mesh( geometry, material );
+	mesh = new THREE.Mesh(geometry, material);
 	
-	mesh.position.x = pos_x;
-	mesh.position.y = pos_y;
-	mesh.position.z = pos_z;
+	mesh.position.x = data.position.x;
+	mesh.position.y = data.position.y;
+	mesh.position.z = data.position.z;
 	
-	//mesh.rotation.x = rot_x;
-	//mesh.rotation.y = rot_y;
-	//mesh.rotation.z = rot_z;
-	
-	scene.add( mesh );
+	scene.add(mesh);
 
-	material.color.setHSL( Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
+	material.color.setHSL(Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75);
 	
-	mesh.name = id;
-	objects.push( mesh );
+	mesh.name = data.id;
+	objects.push(mesh);
 	
 }
 
@@ -479,16 +420,11 @@ function deleteObject(id){
         }
     }
     
-    console.log(objects);
+    //console.log(objects);
 	
 }
 
 
-socket.on('createObjects', function(data){
-	
-	createObjects(data);
-	
-});
 
 socket.on('deleteObject', function(id){
 	
@@ -509,5 +445,29 @@ socket.on('game_update', function(data){
     animate(data);
     
 });
+
+
+
+// fire bullet
+
+document.onclick = function(){
+	
+	socket.emit('createBullet', {
+		id: 'bullet'+Date.now(),
+		position: controls.getObject().position,
+		direction: controls.getDirection(new THREE.Vector3())
+	});
+	
+}
+
+
+
+
+
+
+
+
+
+
 
 
