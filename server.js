@@ -64,7 +64,7 @@ io.on('connection', function(socket){
 		
 		delete objects['_'+socket.id];
 		
-		io.emit('disconnect', '_'+socket.id);
+		io.emit('somebodyDisconnected', '_'+socket.id);
 		
 		//console.log(objects);
 		
@@ -108,9 +108,14 @@ io.on('connection', function(socket){
 	
 	socket.on('deleteObject', function(id){
 		
-		delete objects[id];
+		/*delete objects[id];
 		
-		io.emit('deleteObject', id);
+		io.emit('deleteObject', id);*/
+		
+		var id = id.replace(/^_/, '');
+		if (io.sockets.connected[id]) {
+			io.sockets.connected[id].disconnect();
+		}
 		
 		//console.log(objects);
 		
@@ -137,16 +142,18 @@ io.on('connection', function(socket){
 			}
 		};
 		
-		// move bullet
+		// move/explode bullet
 		
 		var interval = setInterval(function(){
 			objects[data.id].position.x += objects[data.id].direction.x * 2;
 			objects[data.id].position.y += objects[data.id].direction.y * 2;
 			objects[data.id].position.z += objects[data.id].direction.z * 2;
 			
-			// auto explode bullet after ms
+			// explode bullet after ms, or if explode key is set
 			
-			if( Date.now() - parseInt(data.id.replace(/^bullet/, '') ) >= 3000){
+			if( Date.now() - parseInt(data.id.replace(/^bullet/, '') ) >= 3000 ||
+			    objects[data.id]['explode']){
+				
 				//console.log('boom');
 				clearInterval(interval);
 				delete objects[data.id];
@@ -157,6 +164,15 @@ io.on('connection', function(socket){
 			
 		}, 20);
 		
+	});
+	
+	
+	// explode bullet (set key)
+	
+	socket.on('explodeBullet', function(id){
+		if(objects[id]){
+			objects[id]['explode'] = true;
+		}
 	});
 	
 	

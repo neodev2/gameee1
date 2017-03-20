@@ -194,15 +194,15 @@ function animate(data){
 	//requestAnimationFrame(animate);
 	
 	
-	// create/move/rotate objects
+	// create/move objects
 	
 	for(let id in data){
 		
 		if('_'+socket.id != id){
 			
-			var child = scene.getObjectByName(id);
+			mesh = scene.getObjectByName(id);
 		    
-			if(child == undefined){
+			if(mesh == undefined){
 				
 				//console.log('object with name "'+id+'" not found in scene. Creating...');
 				
@@ -220,13 +220,32 @@ function animate(data){
 		        
 		    }else{
 			    
-	            child.position.x = data[id].position.x;
-	            child.position.y = data[id].position.y;
-	            child.position.z = data[id].position.z;
+			    // move mesh
+			    
+	            mesh.position.x = data[id].position.x;
+	            mesh.position.y = data[id].position.y;
+	            mesh.position.z = data[id].position.z;
 	            
-	            //child.rotation.x = data[id].rotation.x;
-	            //child.rotation.y = data[id].rotation.y;
-	            //child.rotation.z = data[id].rotation.z;
+	            
+	            // bullet collision detection
+	            
+	            if(/^bullet/.test(id)){
+		            
+		            var raycasterBullet = new THREE.Raycaster();
+		            raycasterBullet.set(mesh.position, data[id].direction);
+					var intersections = raycasterBullet.intersectObjects(objects);
+					
+					if(intersections.length > 0 && intersections[0].distance <= 5){
+						
+						var hitObject = intersections[0].object;
+						hitObject.material.color.set(0xff0000);
+						socket.emit('explodeBullet', id);
+						
+						socket.emit('deleteObject', hitObject.name);
+						
+					}
+		            
+	            }
 			     
 		    }
 			
@@ -432,7 +451,8 @@ socket.on('deleteObject', function(id){
 	
 });
 
-socket.on('disconnect', function(id){
+socket.on('somebodyDisconnected', function(id){
+	
 	console.log(id+' disconnected');
 	
 	deleteObject(id);
@@ -444,6 +464,16 @@ socket.on('game_update', function(data){
     
     animate(data);
     
+});
+
+socket.on('disconnect', function(){
+	
+	document.body.innerHTML = '<div style="position: fixed;left: 50%;top: 50%;font-size: 48px;transform: translateX(-50%) translateY(-50%);">Game Over</div>';
+	
+	setTimeout(function(){
+		window.location.reload();
+	}, 1000);
+	
 });
 
 
