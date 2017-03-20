@@ -15,24 +15,45 @@ app.get('/', function(req, res){
 /* - - - - - - - - - - - */
 
 
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+var users = {};
+var objects = {};
+
+// populate objects
+
+for(let i=0; i<30; i++){
+	
+	var randomX = ['10', '30', '50', '70', '90', '110', '130', '150'];
+	var randomY = ['10', '30', '50'];
+	var randomZ = ['10', '30', '50', '70', '90', '110', '130', '150'];
+	
+	objects['cube'+i] = {
+		x: randomX[Math.floor(Math.random()*randomX.length)],
+		y: randomY[Math.floor(Math.random()*randomY.length)],
+		z: randomZ[Math.floor(Math.random()*randomZ.length)]
+	};
+	
 }
 
 
-var users = {};
 
 io.on('connection', function(socket){
 	
 	// on connect
 	
 	users['_'+socket.id] = {
-		w: 25,
-		h: 25,
-		d: 25,
-		x: getRandomInt(0, 1100),
-		y: getRandomInt(0, 700),
-		z: getRandomInt(0, 700)
+		w: 20,
+		h: 20,
+		d: 20,
+		position: {
+			x: 0,
+			y: 10,
+			z: 0
+		}
+		//rotation: {
+		//	x: 0,
+		//	y: 0,
+		//	z: 0
+		//}
 	};
 	
 	console.log(users);
@@ -53,7 +74,7 @@ io.on('connection', function(socket){
 	
 	// on action
 	
-	socket.on('x-', function(){
+	/*socket.on('x-', function(){
 		
 		blabla('_'+socket.id, 'x-');
 		
@@ -75,19 +96,48 @@ io.on('connection', function(socket){
 		
 		blabla('_'+socket.id, 'y+');
 		
+	});*/
+	
+	socket.on('position', function(x, y, z){
+		users['_'+socket.id].position.x = x;
+		users['_'+socket.id].position.y = y;
+		users['_'+socket.id].position.z = z;
 	});
+	
+	socket.on('rotation', function(x, y, z){
+		users['_'+socket.id].rotation.x = x;
+		users['_'+socket.id].rotation.y = y;
+		users['_'+socket.id].rotation.z = z;
+	});
+	
+	
+	// create objects
+	
+	socket.emit('createObjects', objects);
+	
+	// delete object
+	
+	socket.on('deleteObject', function(id){
 		
+		delete objects[id];
+		
+		io.emit('deleteObject', id);
+		
+		//console.log(objects);
+		
+	});
+	
 	
 	// game update interval
 	
 	var intervalGameUpdate = setInterval(function(){
 		socket.emit('game_update', users);
-	}, 50);
+	}, 20);
 	
 });
 
 
-function blabla(id, type){
+/*function blabla(id, type){
 	
 	for(let i in users){
 		if(i != id){
@@ -141,7 +191,7 @@ function blabla(id, type){
 		
 	}
 	
-}
+}*/
 
 
 

@@ -8,10 +8,22 @@
 	
 	<body>
 		
-		<canvas id="canvas"></canvas>
+		<!-- <canvas id="canvas"></canvas> -->
+		
+		<div id="blocker">
+
+			<div id="instructions">
+				<span style="font-size:40px">Click to play</span>
+				<br />
+				(W, A, S, D = Move, SPACE = Jump, MOUSE = Look around)
+			</div>
+
+		</div>
 		
 		<script src='/socket.io/socket.io.js'></script>
 		<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+		<script src="https://threejs.org/build/three.js"></script>
+		<script src="https://threejs.org/examples/js/controls/PointerLockControls.js"></script>
         <script src="/resources/js/client.js"></script>
 		
 	</body>
