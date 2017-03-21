@@ -21,18 +21,14 @@ var objects = {};
 
 for(let i=0; i<30; i++){
 	
-	var randomX = ['10', '30', '50', '70', '90', '110', '130', '150'];
-	var randomY = ['10', '30', '50'];
-	var randomZ = ['10', '30', '50', '70', '90', '110', '130', '150'];
-	
 	objects['cube'+i] = {
 		w: 20,
 		h: 20,
 		d: 20,
 		position: {
-			x: randomX[Math.floor(Math.random()*randomX.length)],
-			y: randomY[Math.floor(Math.random()*randomY.length)],
-			z: randomZ[Math.floor(Math.random()*randomZ.length)]
+			x:    (Math.floor(Math.random()*7)*20)-50,
+			y: 10+(Math.floor(Math.random()*4)*20),
+			z:    (Math.floor(Math.random()*7)*20)-250
 		}
 	};
 	
@@ -127,9 +123,9 @@ io.on('connection', function(socket){
 	socket.on('createBullet', function(data){
 		
 		objects[data.id] = {
-			w: 1,
-			h: 1,
-			d: 1,
+			w: 0.4,
+			h: 0.4,
+			d: 0.4,
 			position: {
 				x: data.position.x,
 				y: data.position.y,
